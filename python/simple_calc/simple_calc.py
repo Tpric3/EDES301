@@ -54,6 +54,13 @@ Error conditions:
 
 # NOTE - Add import statements to allow access to Python library functions
 # NOTE - Hint:  Look at  https://docs.python.org/3/library/operator.html
+import operator
+import sys
+# Compatibility for Python 2 and 3
+try:
+    input_func = raw_input  # Python 2
+except NameError:
+    input_func = input # Python 3
 
 # ------------------------------------------------------------------------
 # Constants
@@ -70,6 +77,14 @@ Error conditions:
 operators = {
     # Dictionary syntax:  "key" : "value"
     #   i.e. "function" : operator.<function>
+    "+" : operator.add,
+    "-" : operator.sub,
+    "*" : operator.mul,
+    '/': operator.truediv if sys.version_info[0] >= 3 else operator.div,
+    '>>': operator.rshift,
+    '<<': operator.lshift,
+    '%': operator.mod,
+    '**': operator.pow
 }
 
 
@@ -87,7 +102,12 @@ def get_user_input():
     try:
         # NOTE - Use "pass" statements to allow code to be run without having to 
         # NOTE - fill out the contents.  This pass statement should be removed    
-        pass
+        input1 = int(input("First Number : "))
+        input2 = int(input("Second Numnber : "))
+        op     = input("Operation (+,-,*,/): ")
+        
+        return(input1, input2, operators[op])
+        
         
         # NOTE - User input is generally returned as a string and must be translated.
     except:
@@ -120,6 +140,16 @@ if __name__ == "__main__":
     # NOTE -   - Execute the function on the numbers and print the results
 
     # NOTE - Use "pass" statements to allow code to be run without having to 
-    # NOTE - fill out the contents.  This pass statement should be removed    
-    pass
+    # NOTE - fill out the contents.  This pass statement should be removed   
+    while True:
+
+        (input1, input2, op) = get_user_input()
+        
+        if (input1 == None) or (input2 == None) or (op == None):
+            print("Invalid Input")
+            break
+        
+        print(op(input1,input2))
+        
+
 
