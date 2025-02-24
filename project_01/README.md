@@ -1,2 +1,2 @@
-# Prosthetic_Grip_Project
+# Prosthetic Grip Project
 
