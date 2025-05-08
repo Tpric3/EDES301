@@ -3,7 +3,7 @@
 Button Driver
 --------------------------------------------------------------------------
 License:   
-Copyright 2021-2025 - <Your Name>
+Copyright 2021-2025 - Tarik Price
 
 Redistribution and use in source and binary forms, with or without 
 modification, are permitted provided that the following conditions are met:
@@ -86,14 +86,21 @@ Software API:
 
 """
 import time
+
 import Adafruit_BBIO.GPIO as GPIO
 
 # ------------------------------------------------------------------------
 # Constants
 # ------------------------------------------------------------------------
 
-HIGH = GPIO.HIGH
-LOW = GPIO.LOW
+HIGH          = GPIO.HIGH
+LOW           = GPIO.LOW
+
+# ------------------------------------------------------------------------
+# Global variables
+# ------------------------------------------------------------------------
+
+# None
 
 # ------------------------------------------------------------------------
 # Functions / Classes
@@ -101,24 +108,27 @@ LOW = GPIO.LOW
 
 class Button():
     """ Button Class """
-    pin = None
-    unpressed_value = None
-    pressed_value = None
-    sleep_time = None
-    press_duration = None
+    pin                           = None
+    
+    unpressed_value               = None
+    pressed_value                 = None
+    
+    sleep_time                    = None
+    press_duration                = None
 
-    pressed_callback = None
-    pressed_callback_value = None
-    unpressed_callback = None
-    unpressed_callback_value = None
-    on_press_callback = None
-    on_press_callback_value = None
-    on_release_callback = None
-    on_release_callback_value = None
-
+    pressed_callback              = None
+    pressed_callback_value        = None
+    unpressed_callback            = None
+    unpressed_callback_value      = None
+    on_press_callback             = None
+    on_press_callback_value       = None
+    on_release_callback           = None
+    on_release_callback_value     = None
+    
+    
     def __init__(self, pin=None, press_low=True, sleep_time=0.1):
         """ Initialize variables and set up the button """
-        if (pin is None):
+        if (pin == None):
             raise ValueError("Pin not provided for Button()")
         else:
             self.pin = pin
@@ -127,21 +137,30 @@ class Button():
         # For pull down resistor configuration:  press_low = False
         if press_low:
             self.unpressed_value = HIGH
-            self.pressed_value = LOW
+            self.pressed_value   = LOW
         else:
             self.unpressed_value = LOW
-            self.pressed_value = HIGH
+            self.pressed_value   = HIGH
         
         # By default sleep time is "0.1" seconds
-        self.sleep_time = sleep_time
-        self.press_duration = 0.0        
+        self.sleep_time      = sleep_time
+        self.press_duration  = 0.0        
 
         # Initialize the hardware components        
         self._setup()
-
+    
+    # End def
+    
+    
     def _setup(self):
         """ Setup the hardware components. """
-        GPIO.setup(self.pin, GPIO.IN)  # Initialize button as input
+        # Initialize Button
+        # HW#4 TODO: (one line of code)
+        #   Remove "pass" and use the Adafruit_BBIO.GPIO library to set up the button
+        pass
+
+    # End def
+
 
     def is_pressed(self):
         """ Is the Button pressed?
@@ -149,34 +168,62 @@ class Button():
            Returns:  True  - Button is pressed
                      False - Button is not pressed
         """
-        return GPIO.input(self.pin) == self.pressed_value
+        # HW#4 TODO: (one line of code)
+        #   Remove "pass" and return the comparison of input value of the GPIO pin of 
+        #   the buton (i.e. self.pin) to the "pressed value" of the class 
+        pass
+
+    # End def
+
 
     def wait_for_press(self):
-        """ Wait for the button to be pressed. This function will 
-            wait for the button to be pressed and released so there
-            are no race conditions.
-            
-            Arguments:  None
-            Returns:    None
+        """ Wait for the button to be pressed.  This function will 
+           wait for the button to be pressed and released so there
+           are no race conditions.
+           
+           Use the callback functions to peform actions while waiting
+           for the button to be pressed or get values after the button
+           is pressed.
+        
+           Arguments:  None
+           Returns:    None
         """
         button_press_time = None
         
-        # Wait for button press (execute while the button is NOT pressed)
-        while GPIO.input(self.pin) == self.unpressed_value:
+        # Wait for button press
+        #   Execute the unpressed callback function based on the sleep time
+        #
+        # HW#4 TODO: (one line of code)
+        #   Update while loop condition to compare the input value of the  
+        #   GPIO pin of the buton (i.e. self.pin) to the "unpressed value" 
+        #   of the class (i.e. we are executing the while loop while the 
+        #   button is not being pressed)
+        #
+        while(False):
+        
             if self.unpressed_callback is not None:
                 self.unpressed_callback_value = self.unpressed_callback()
             
             time.sleep(self.sleep_time)
             
-        # Record time when button is pressed
+        # Record time
         button_press_time = time.time()
         
-        # Execute the on press callback function
+        # Executed the on press callback function
         if self.on_press_callback is not None:
             self.on_press_callback_value = self.on_press_callback()
         
-        # Wait for button release (execute while the button IS pressed)
-        while GPIO.input(self.pin) == self.pressed_value:
+        # Wait for button release
+        #   Execute the pressed callback function based on the sleep time
+        #
+        # HW#4 TODO: (one line of code)
+        #   Update while loop condition to compare the input value of the  
+        #   GPIO pin of the buton (i.e. self.pin) to the "pressed value" 
+        #   of the class (i.e. we are executing the while loop while the 
+        #   button is being pressed)
+        #
+        while(False):
+        
             if self.pressed_callback is not None:
                 self.pressed_callback_value = self.pressed_callback()
                 
@@ -185,60 +232,90 @@ class Button():
         # Record the press duration
         self.press_duration = time.time() - button_press_time
 
-        # Execute the on release callback function
+        # Executed the on release callback function
         if self.on_release_callback is not None:
-            self.on_release_callback_value = self.on_release_callback()
+            self.on_release_callback_value = self.on_release_callback()        
+        
+    # End def
 
+    
     def get_last_press_duration(self):
         """ Return the last press duration """
         return self.press_duration
+    
+    # End def
+    
     
     def cleanup(self):
         """ Clean up the button hardware. """
         # Nothing to do for GPIO
         pass
-
+    
+    # End def
+    
+    
     # -----------------------------------------------------
     # Callback Functions
     # -----------------------------------------------------
 
     def set_pressed_callback(self, function):
-        """ Function executed every "sleep_time" while the button is pressed """
+        """ Function excuted every "sleep_time" while the button is pressed """
         self.pressed_callback = function
+    
+    # End def
 
     def get_pressed_callback_value(self):
         """ Return value from pressed_callback function """
         return self.pressed_callback_value
     
+    # End def
+    
     def set_unpressed_callback(self, function):
-        """ Function executed every "sleep_time" while the button is unpressed """
+        """ Function excuted every "sleep_time" while the button is unpressed """
         self.unpressed_callback = function
+    
+    # End def
 
     def get_unpressed_callback_value(self):
         """ Return value from unpressed_callback function """
         return self.unpressed_callback_value
     
+    # End def
+
     def set_on_press_callback(self, function):
-        """ Function executed once when the button is pressed """
+        """ Function excuted once when the button is pressed """
         self.on_press_callback = function
+    
+    # End def
 
     def get_on_press_callback_value(self):
         """ Return value from on_press_callback function """
         return self.on_press_callback_value
+    
+    # End def
 
     def set_on_release_callback(self, function):
-        """ Function executed once when the button is released """
+        """ Function excuted once when the button is released """
         self.on_release_callback = function
+    
+    # End def
 
     def get_on_release_callback_value(self):
         """ Return value from on_release_callback function """
         return self.on_release_callback_value
+    
+    # End def    
+    
+# End class
+
+
 
 # ------------------------------------------------------------------------
 # Main script
 # ------------------------------------------------------------------------
 
 if __name__ == '__main__':
+
     print("Button Test")
 
     # Create instantiation of the button
@@ -247,17 +324,21 @@ if __name__ == '__main__':
     # Create functions to test the callback functions
     def pressed():
         print("  Button pressed")
+    # End def
     
     def unpressed():
         print("  Button not pressed")
+    # End def
 
     def on_press():
         print("  On Button press")
         return 3
+    # End def
 
     def on_release():
         print("  On Button release")
-        return 4    
+        return 4
+    # End def    
 
     # Use a Keyboard Interrupt (i.e. "Ctrl-C") to exit the test
     try:
@@ -287,7 +368,7 @@ if __name__ == '__main__':
         button.set_on_release_callback(on_release)
         
         print("Waiting for button press with callback functions ...")
-        button.wait_for_press()
+        value = button.wait_for_press()
         print("    Button pressed for {0} seconds. ".format(button.get_last_press_duration()))
         print("    Button pressed callback return value    = {0} ".format(button.get_pressed_callback_value()))
         print("    Button unpressed callback return value  = {0} ".format(button.get_unpressed_callback_value()))
@@ -298,3 +379,4 @@ if __name__ == '__main__':
         pass
 
     print("Test Complete")
+

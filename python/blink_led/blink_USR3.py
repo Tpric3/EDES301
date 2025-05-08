@@ -1,10 +1,10 @@
-#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """
 --------------------------------------------------------------------------
-Blinking LED
+Blink USR3
 --------------------------------------------------------------------------
 License:   
-Copyright 2025 - Tarik Price
+Copyright 2025 - Sophianne Loh
 
 Redistribution and use in source and binary forms, with or without 
 modification, are permitted provided that the following conditions are met:
@@ -32,31 +32,25 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF 
 THE POSSIBILITY OF SUCH DAMAGE.
 --------------------------------------------------------------------------
+
+Script will blink the USR3 LED on PocketBeagle at 5 Hz using the Adafruit BBIO
+library.
+
+--------------------------------------------------------------------------
 """
 
 import Adafruit_BBIO.GPIO as GPIO
 import time
 
-# Define the USR3 LED pin (BeagleBone uses GPIO for LEDs)
-LED_PIN = "USR3"
+LED = "USR3" # only want to blink USR3
+GPIO.setup(LED, GPIO.OUT)
 
-# Set up the pin as an output
-GPIO.setup(LED_PIN, GPIO.OUT)
-
-# Set the blink rate (5 Hz = 0.1s per cycle)
-BLINK_DELAY = 0.1
-
-def blink_led():
-    """Blink the USR3 LED at 5 Hz indefinitely."""
-    try:
-        while True:
-            GPIO.output(LED_PIN, GPIO.HIGH)  # Turn LED ON
-            time.sleep(BLINK_DELAY / 2)  # LED ON for 0.05s
-            GPIO.output(LED_PIN, GPIO.LOW)   # Turn LED OFF
-            time.sleep(BLINK_DELAY / 2)  # LED OFF for 0.05s
-    except KeyboardInterrupt:
-        GPIO.output(LED_PIN, GPIO.LOW)  # Turn off LED before exiting
-        print("\nBlinking stopped. USR3 LED turned off.")
-
-if __name__ == "__main__":
-    blink_led()
+try:
+    while True:
+        GPIO.output(LED, GPIO.HIGH) # turn on
+        time.sleep(0.1) # 0.1 s on (for 5 Hz)
+        GPIO.output(LED, GPIO.LOW) # turn off
+        time.sleep(0.1) # 0.1s off (for 5 Hz)
+except KeyboardInterrupt:
+    print("Exiting program")
+    GPIO.cleanup()
