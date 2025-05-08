@@ -4,7 +4,7 @@
 HT16K33 I2C Library
 --------------------------------------------------------------------------
 License:   
-Copyright 2018-2025 <NAME>
+Copyright 2018-2025 Tarik Price
 
 Redistribution and use in source and binary forms, with or without 
 modification, are permitted provided that the following conditions are met:
@@ -33,7 +33,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 --------------------------------------------------------------------------
 Software API:
 
-  HT16K33(bus, address=0x70)
+  HT16K33(bus, address=0x70) # address is default (no soldering done)
     - Provide i2c bus that dispaly is on
     - Provide i2c address for the display
     
@@ -97,7 +97,7 @@ LETTERS                     = { "a" : 0x77, "A" : 0x77,    # "A"
                                 "h" : 0x74, "H" : 0x76,    # "h", "H"
                                 "i" : 0x04, "I" : 0x30,    # "i", "I"
                                 "j" : 0x0e, "J" : 0x0e,    # "J"
-# Cannot be implemented         "k" : None, "K" : None,    
+# Cannot be implemented         "k" : None, "K" : None,    in 7 segment display
                                 "l" : 0x38, "L" : 0x38,    # "L"
 # Cannot be implemented         "m" : None, "M" : None,    
                                 "n" : 0x54, "N" : 0x54,    # "n"
@@ -166,14 +166,14 @@ class HT16K33():
         """ Initialize class variables; Set up display; Set display to blank """
         
         # Initialize class variables
-        print("HT16K33:")
-        print("    Bus     = {0}".format(bus))
-        print("    Address = 0x{0:x}".format(address))
+        self.bus = bus
+        self.address = address
+        self.command = "/usr/sbin/i2cset -y {0} {1}".format(bus, address)
 
         # Set up display        
-        
+        self._setup(blink, brightness)
         # Set display to blank
-            
+        self.blank()   
     # End def
     
     def _setup(self, blink, brightness):
@@ -253,7 +253,7 @@ class HT16K33():
         """Clear the display to read nothing"""
         if self.command:
             self.set_colon(False)
-
+            # each digit gets set to 0
             self.set_digit_raw(3, 0x00)
             self.set_digit_raw(2, 0x00)
             self.set_digit_raw(1, 0x00)
@@ -284,7 +284,15 @@ class HT16K33():
         
         Will throw a ValueError if number is not between 0 and 9999.
         """
-
+        
+        if (value < 0) or (value > HT16K33_MAX_VALUE):
+            raise ValueError("Value must be between 0 and 9999.")
+        
+        self.set_digit(3, (value % 10))
+        self.set_digit(2, ((value//10) % 10))
+        self.set_digit(1, ((value//100) % 10))
+        self.set_digit(0, ((value//1000) % 10))
+        
         # Modify code to implement this function
         print("Set value = {0}".format(value)) # Remove when updating code
 
@@ -308,10 +316,10 @@ class HT16K33():
         for i, char in enumerate(value):
             try:
                 # Translate the character into the value needed for hex display
+                code = LETTERS[char]
                 
                 # Set the display digit with the character value
-                print("Set char  = {0}".format(char)) # Remove when updating code
-                
+                self.set_digit_raw(i, code) # raw bc not just numbers
             except:
                 raise ValueError("Character {0} not supported".format(char))
 
