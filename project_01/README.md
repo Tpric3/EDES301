@@ -1,2 +1,2 @@
-# Prosthetic Grip Project
+# Prosthetic Force Sensor Project
 
