@@ -54,7 +54,6 @@ Requirements:
       - In any state, pressing button will disable the device and return the grip state to 0
       
       
-"""
 # ------------------------------------------------------------------------
 # Used Libraries
 # ------------------------------------------------------------------------
