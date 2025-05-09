@@ -54,7 +54,6 @@ Requirements:
       - In any state, pressing button will disable the device and return the grip state to 0
       
       
-"""
 # ------------------------------------------------------------------------
 # Used Libraries
 # ------------------------------------------------------------------------
@@ -149,7 +148,7 @@ class finger_aug:
         PWM.cleanup()
         GPIO.output(self.red_led, GPIO.LOW)
         GPIO.output(self.green_led, GPIO.LOW)
-        self.display.text("DEAD")
+        self.display.text("----")
         self.display.set_colon(False)
         print("Program Complete")
 
