@@ -148,7 +148,7 @@ class finger_aug:
         PWM.cleanup()
         GPIO.output(self.red_led, GPIO.LOW)
         GPIO.output(self.green_led, GPIO.LOW)
-        self.display.text("DEAD")
+        self.display.text("----")
         self.display.set_colon(False)
         print("Program Complete")
 
