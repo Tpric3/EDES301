@@ -31,7 +31,43 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 --------------------------------------------------------------------------
 
-Force Sensitive Resistor Driver
+FSR (Force-Sensitive Resistor) Driver
+
+This driver is designed to read the analog output from an FSR (Force-Sensitive Resistor), 
+convert the reading to an estimated force, and display it. The FSR is connected in a
+voltage divider circuit and read using the ADC on the PocketBeagle. The driver uses an
+empirical formula to estimate the force from the FSR resistance.
+
+Software API:
+
+    read_voltage(pin)
+    - Reads the ADC value from the specified pin and converts it into an actual voltage.
+    - `pin` : The pin number where the FSR is connected.
+    - Returns : The voltage at the FSR.
+
+    compute_resistance(v_out)
+    - Computes the resistance of the FSR based on the output voltage using the voltage divider equation.
+    - `v_out` : The voltage reading from the FSR.
+    - Returns : The calculated resistance of the FSR in ohms.
+
+    estimate_force(resistance)
+    - Estimates the force applied to the FSR based on its resistance using an empirical formula (FSR 402 model).
+    - `resistance` : The resistance of the FSR.
+    - Returns : The estimated force in Newtons.
+
+    Main Loop
+    - Reads the voltage from the FSR, calculates the resistance, and estimates the force every 200 ms. The result is printed to the console.
+
+    ADC.setup()
+    - Initializes the ADC hardware for use.
+    
+    ADC.read(pin)
+    - Reads the ADC value from the specified pin and returns a value between 0 and 1 representing the analog input voltage.
+    
+    Constants
+    - FSR_PIN : The ADC pin the FSR is connected to (configured for use on the PocketBeagle).
+    - R_FIXED : The fixed resistor value used in the voltage divider (10 kΩ).
+    - VCC : The reference voltage for the ADC (3.3V for the PocketBeagle).
 
   
 
