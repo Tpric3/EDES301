@@ -79,7 +79,7 @@ import math
 
 # Setup
 ADC.setup()
-FSR_PIN = "P1_27"  # Change to your actual ADC input pin
+FSR_PIN = "P1_27"  
 R_FIXED = 10000.0  # 10kΩ resistor in voltage divider
 VCC = 3.3          # PocketBeagle analog reference voltage
 
