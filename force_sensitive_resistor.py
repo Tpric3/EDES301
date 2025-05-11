@@ -39,29 +39,52 @@ Force Sensitive Resistor Driver
 
 import Adafruit_BBIO.ADC as ADC
 import time
+import math
 
+# Setup
 ADC.setup()
-adc_pin = "P1_21"  # Change to your pin
-R_fixed = 10000  # 10kΩ fixed resistor
+FSR_PIN = "P1_27"  # Change to your actual ADC input pin
+R_FIXED = 10000.0  # 10kΩ resistor in voltage divider
+VCC = 3.3          # PocketBeagle analog reference voltage
 
-while True:
-    reading = ADC.read(adc_pin)
-    voltage = reading * 1.8
+def read_voltage(pin):
+    """Read ADC value and convert to actual voltage."""
+    analog_value = ADC.read(pin)
+    return analog_value * VCC
 
-    # Skip low voltage readings to avoid division by zero
-    if voltage < 0.01 or voltage >= 1.8:
-        force = 0.0
-    else:
-        try:
-            resistance = (1.8 - voltage) * R_fixed / voltage
-            if resistance == 0:
-                force = 0.0
-            else:
-                force = 1.0 / resistance  # or scale this as needed
-        except ZeroDivisionError:
-            force = 0.0
+def compute_resistance(v_out):
+    """Calculate FSR resistance from output voltage."""
+    if v_out <= 0 or v_out >= VCC:
+        return None  # Avoid divide by zero or invalid values
+    return R_FIXED * (VCC - v_out) / v_out
 
-    print(f"Force (arb. units): {force:.5f}")
-    time.sleep(0.1)
+def estimate_force(resistance):
+    """Estimate force in Newtons based on empirical curve for FSR 402."""
+    if resistance is None or resistance <= 0:
+        return 0.0
+
+    # Empirical curve approximation: log-log linear fit
+    # For FSR 402: force (g) ≈ 100000 * (1/R)^1.5  [where R in ohms]
+    # We'll return force in Newtons: 1 N ≈ 100 g
+    force_g = 100000 * math.pow(1.0 / resistance, 1.5)
+    force_n = force_g / 100.0
+    return force_n
+
+# Main loop
+try:
+    while True:
+        voltage = read_voltage(FSR_PIN)
+        resistance = compute_resistance(voltage)
+        force = estimate_force(resistance)
+
+        if resistance is None:
+            print(f"Voltage: {voltage:.2f} V | Resistance: -- | Estimated Force: --")
+        else:
+            print(f"Voltage: {voltage:.2f} V | Resistance: {resistance:.0f} Ω | Estimated Force: {force:.2f} N")
+        
+        time.sleep(0.2)
+
+except KeyboardInterrupt:
+    print("Stopped.")
 
 
