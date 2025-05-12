@@ -91,7 +91,8 @@ This project implements a programmable prosthetic finger device using a PocketBe
   - Red LED lights up
   - Display reads "OFF"
 
-NOTE: For more information on the hardware setup and a proper demonstration of the project, visit [INSERT HERE]
+NOTE: For more information on the hardware setup and a proper demonstration of the project, visit https://www.hackster.io/tarik-price/prosthetic-force-sensor-project-08858d
+
 
 I want to give a huge thanks to Dr. Erik Welsh for his guidance throughout the completion of this project as well as Paul Kim for his original project which inspired the creation of this one
 Link to Paul Kim's Project: https://www.hackster.io/pkim7035/6-finger-augmentation-with-pocketbeagle-d0ea5d
